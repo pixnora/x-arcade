@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PIXNORA | Indie Mini-Games</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body class="lang-en">
 
@@ -303,7 +303,7 @@
     function setLang(lang) {
       document.body.className = 'lang-' + lang;
       document.documentElement.lang = lang;
-      localStorage.setItem('pixnora_lang', lang);
+      try { localStorage.setItem('pixnora_lang', lang); } catch (e) {}
       document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn';
       document.getElementById('btn-zh').className = lang === 'zh' ? 'lang-btn active' : 'lang-btn';
       document.title = lang === 'en' ? 'PIXNORA | Indie Mini-Games' : 'PIXNORA | 独立小游戏站';
@@ -314,7 +314,8 @@
     document.getElementById('btn-en').addEventListener('touchstart', function(e) { e.preventDefault(); setLang('en'); });
     document.getElementById('btn-zh').addEventListener('touchstart', function(e) { e.preventDefault(); setLang('zh'); });
     
-    var savedLang = localStorage.getItem('pixnora_lang') || 'en';
+    var savedLang = 'en';
+    try { savedLang = localStorage.getItem('pixnora_lang') || 'en'; } catch (e) {}
     setLang(savedLang);
   </script>
 </body>

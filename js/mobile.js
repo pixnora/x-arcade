@@ -130,19 +130,20 @@
   selector.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', () => {
       controlMode = btn.dataset.mode;
-      localStorage.setItem('pixnora_ctrl', controlMode);
+      try { localStorage.setItem('pixnora_ctrl', controlMode); } catch(e) {}
       applyMode(controlMode);
     });
     btn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       controlMode = btn.dataset.mode;
-      localStorage.setItem('pixnora_ctrl', controlMode);
+      try { localStorage.setItem('pixnora_ctrl', controlMode); } catch(e) {}
       applyMode(controlMode);
     }, {passive: false});
   });
 
   // ====== Read saved preference ======
-  let controlMode = localStorage.getItem('pixnora_ctrl') || 'dpad';
+  let controlMode = 'dpad';
+  try { controlMode = localStorage.getItem('pixnora_ctrl') || 'dpad'; } catch(e) {}
   applyMode(controlMode);
 
   function applyMode(mode) {
