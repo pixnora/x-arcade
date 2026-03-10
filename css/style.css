@@ -254,6 +254,7 @@ body {
 .c-hangman { background: #5f27cd; }
 .c-crosser { background: #ff9f43; }
 .c-aim { background: #c8d6e5; }
+.c-balloon { background: #E0F7FA; }
 
 /* Mobile Canvas Fix */
 .game-canvas-wrapper canvas {
