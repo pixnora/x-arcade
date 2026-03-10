@@ -262,3 +262,43 @@ body {
   height: auto;
   touch-action: none; /* Prevent zooming and scrolling */
 }
+
+
+/* --- Language Switch --- */
+.lang-switch {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+}
+.lang-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  padding: 4px 12px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--text-muted);
+  box-shadow: 2px 2px 0px var(--border);
+  transition: all 0.1s;
+}
+.lang-btn.active {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0px 0px 0px var(--border);
+  transform: translate(2px, 2px);
+}
+.lang-btn:not(.active):active {
+  box-shadow: 0px 0px 0px var(--border);
+  transform: translate(2px, 2px);
+}
+
+body.lang-en .zh { display: none !important; }
+body.lang-zh .en { display: none !important; }
+
+/* Adjust layout relative to the switch */
+.site-header {
+  position: relative;
+}

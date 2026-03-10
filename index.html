@@ -1,198 +1,316 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JS Arcade | 摸鱼专用小游戏</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>PIXNORA | Indie Mini-Games</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="lang-en">
+
+  <div class="lang-switch">
+    <button onclick="setLang('en')" class="lang-btn active" id="btn-en">EN</button>
+    <button onclick="setLang('zh')" class="lang-btn" id="btn-zh">中文</button>
+  </div>
 
   <header class="site-header">
-    <h1>X-ARCADE.</h1>
-    <p>手写的一些网页小玩具，纯原生 JS，无聊时摸鱼消遣专用。</p>
+    <h1>PIXNORA.</h1>
+    <p style="margin-top: 10px;">
+      <span class="en">Welcome to <strong>PIXNORA</strong>. A curated collection of hand-crafted, vanilla JavaScript mini-games.<br>No frameworks, just pure neo-brutalist arcade fun for your fingertips.</span>
+      <span class="zh">欢迎来到 <strong>PIXNORA</strong> 独立游戏站。全站纯手工打造，原生 JavaScript 驱动。<br>秉承粗野主义美学理念，无冗余框架加载，极速体验，完美匹配你的摸鱼消遣时光。</span>
+    </p>
   </header>
 
   <main class="games-container">
     <div class="games-grid">
-
       <a href="games/snake/index.html" class="game-card">
         <div class="card-icon c-snake">SNAKE</div>
         <div class="card-body">
-          <h3>贪吃蛇</h3>
-          <p>经典复刻版，用方向键或WASD操控。</p>
-          <span class="card-tag">Keyboard</span>
+          <h3>
+            <span class="en">Snake Retro</span>
+            <span class="zh">贪吃蛇</span>
+          </h3>
+          <p>
+            <span class="en">The classic snake game. Eat the red blocks to grow, but don't bite yourself.</span>
+            <span class="zh">经典复刻版贪吃蛇，不断吃食物变长，注意别撞墙。</span>
+          </p>
+          <span class="card-tag">Keyboard / D-Pad</span>
         </div>
       </a>
-
       <a href="games/memory/index.html" class="game-card">
         <div class="card-icon c-memory">MEMORY</div>
         <div class="card-body">
-          <h3>翻牌记忆</h3>
-          <p>翻开卡牌找配对，顺便测测你的瞬时记忆。</p>
-          <span class="card-tag">Mouse</span>
-        </div>
-      </a>
-
-      <a href="games/2048/index.html" class="game-card">
-        <div class="card-icon c-2048">2048</div>
-        <div class="card-body">
-          <h3>2048</h3>
-          <p>当年很火的杀时间神器，滑动合并相同数字。</p>
-          <span class="card-tag">Keyboard / Swipe</span>
-        </div>
-      </a>
-
-      <a href="games/minesweeper/index.html" class="game-card">
-        <div class="card-icon c-mine">MINE</div>
-        <div class="card-body">
-          <h3>扫雷</h3>
-          <p>经典黑框扫雷，右键插旗，没事可以练练逻辑。</p>
-          <span class="card-tag">Mouse</span>
-        </div>
-      </a>
-
-      <a href="games/breakout/index.html" class="game-card">
-        <div class="card-icon c-brick">BRICK</div>
-        <div class="card-body">
-          <h3>打砖块</h3>
-          <p>控制挡板清空所有砖块，小心别漏球了。</p>
-          <span class="card-tag">Mouse / Keyboard</span>
-        </div>
-      </a>
-
-      <a href="games/reaction/index.html" class="game-card">
-        <div class="card-icon c-reaction">SPEED</div>
-        <div class="card-body">
-          <h3>反应测试</h3>
-          <p>等颜色变了就马上点，测测你是不是电竞级手速。</p>
-          <span class="card-tag">Click</span>
-        </div>
-      </a>
-
-      <a href="games/tictactoe/index.html" class="game-card">
-        <div class="card-icon c-tic">TIC-TAC</div>
-        <div class="card-body">
-          <h3>井字棋</h3>
-          <p>三点一线的简单博弈，做了一个不那么蠢的AI。</p>
-          <span class="card-tag">Click</span>
-        </div>
-      </a>
-
-      <a href="games/colorflood/index.html" class="game-card">
-        <div class="card-icon c-flood">FLOOD</div>
-        <div class="card-body">
-          <h3>颜色洪水</h3>
-          <p>从左上角开始蔓延颜色，步数有限制，看好再点。</p>
-          <span class="card-tag">Click</span>
-        </div>
-      </a>
-
-
-      <a href="games/pong/index.html" class="game-card">
-        <div class="card-icon c-pong">PONG</div>
-        <div class="card-body">
-          <h3>极简乒乓</h3>
-          <p>上下控制挡板，经典的复刻。</p>
-          <span class="card-tag">Keyboard (W/S)</span>
-        </div>
-      </a>
-
-      <a href="games/jumper/index.html" class="game-card">
-        <div class="card-icon c-jumper">JUMP</div>
-        <div class="card-body">
-          <h3>跳跃方块</h3>
-          <p>点击跳跃躲避障碍物，致敬某小鸟。</p>
-          <span class="card-tag">Click / Space</span>
-        </div>
-      </a>
-
-      <a href="games/simon/index.html" class="game-card">
-        <div class="card-icon c-simon">SIMON</div>
-        <div class="card-body">
-          <h3>指令记忆</h3>
-          <p>看着亮起的顺序跟着点，比比谁能记最长。</p>
-          <span class="card-tag">Click</span>
-        </div>
-      </a>
-
-      <a href="games/whack/index.html" class="game-card">
-        <div class="card-icon c-whack">WHACK</div>
-        <div class="card-body">
-          <h3>打方块</h3>
-          <p>经典打地鼠粗野版，看看你的点击速度。</p>
-          <span class="card-tag">Click</span>
-        </div>
-      </a>
-
-      <a href="games/connect4/index.html" class="game-card">
-        <div class="card-icon c-connect4">CONN4</div>
-        <div class="card-body">
-          <h3>四子连线</h3>
-          <p>和朋友一人一下，看谁先连成四条线。</p>
-          <span class="card-tag">Click</span>
-        </div>
-      </a>
-
-      <a href="games/typing/index.html" class="game-card">
-        <div class="card-icon c-typing">TYPE</div>
-        <div class="card-body">
-          <h3>打字防线</h3>
-          <p>天上掉字母，敲对即可击毁它。</p>
-          <span class="card-tag">Keyboard</span>
-        </div>
-      </a>
-
-      <a href="games/shooter/index.html" class="game-card">
-        <div class="card-icon c-shooter">SPACE</div>
-        <div class="card-body">
-          <h3>像素空战</h3>
-          <p>经典小蜜蜂机制，用子弹突突落下的方块群。</p>
-          <span class="card-tag">Arrows/Space</span>
-        </div>
-      </a>
-
-      <a href="games/hangman/index.html" class="game-card">
-        <div class="card-icon c-hangman">HANG</div>
-        <div class="card-body">
-          <h3>猜词客</h3>
-          <p>英文单词盲猜，选错6次就挂小人上。</p>
-          <span class="card-tag">Keyboard</span>
-        </div>
-      </a>
-
-      <a href="games/crosser/index.html" class="game-card">
-        <div class="card-icon c-crosser">CROSS</div>
-        <div class="card-body">
-          <h3>步步惊心</h3>
-          <p>操控你的黑方块穿过马路，躲开飞驰的其他黑框块。</p>
-          <span class="card-tag">Arrows</span>
-        </div>
-      </a>
-
-      <a href="games/aim/index.html" class="game-card">
-        <div class="card-icon c-aim">AIM</div>
-        <div class="card-body">
-          <h3>鼠标瞄准</h3>
-          <p>在靶子消失前精准点击，用来活动右手的。</p>
-          <span class="card-tag">Mouse</span>
-        </div>
-      </a>
-    
-      <a href="games/balloon/index.html" class="game-card">
-        <div class="card-icon c-balloon">BALLOON</div>
-        <div class="card-body">
-          <h3>气球大作战 (儿童推荐)</h3>
-          <p>戳破从屏幕下方飘上来的彩色气球，手眼协调训练。</p>
+          <h3>
+            <span class="en">Memory Match</span>
+            <span class="zh">翻牌记忆</span>
+          </h3>
+          <p>
+            <span class="en">Flip the cards to match identical pairs. Test your short-term memory.</span>
+            <span class="zh">翻开卡牌寻找两两配对，测测你的瞬时记忆力。</span>
+          </p>
           <span class="card-tag">Touch / Mouse</span>
         </div>
       </a>
-</div>
+      <a href="games/2048/index.html" class="game-card">
+        <div class="card-icon c-2048">2048</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">2048 Blocks</span>
+            <span class="zh">2048</span>
+          </h3>
+          <p>
+            <span class="en">Slide tiles across the board to merge matching numbers up to 2048.</span>
+            <span class="zh">杀时间神器，滑动合并相同数字，向2048冲刺。</span>
+          </p>
+          <span class="card-tag">Swipe / Keyboard</span>
+        </div>
+      </a>
+      <a href="games/minesweeper/index.html" class="game-card">
+        <div class="card-icon c-mine">MINE</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Minesweeper</span>
+            <span class="zh">扫雷</span>
+          </h3>
+          <p>
+            <span class="en">The classic logic puzzle. Clear the board without detonating any hidden mines.</span>
+            <span class="zh">经典黑白扫雷，右击插旗，纯逻辑推理挑战。</span>
+          </p>
+          <span class="card-tag">Mouse / Hold</span>
+        </div>
+      </a>
+      <a href="games/breakout/index.html" class="game-card">
+        <div class="card-icon c-brick">BRICK</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Breakout</span>
+            <span class="zh">打砖块</span>
+          </h3>
+          <p>
+            <span class="en">Bounce the ball off your paddle to smash all the bricks above.</span>
+            <span class="zh">控制底部挡板反弹小球，清空上方所有砖块。</span>
+          </p>
+          <span class="card-tag">Mouse / Touch</span>
+        </div>
+      </a>
+      <a href="games/reaction/index.html" class="game-card">
+        <div class="card-icon c-reaction">SPEED</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Reaction Test</span>
+            <span class="zh">反应测试</span>
+          </h3>
+          <p>
+            <span class="en">Wait for the red color to turn green and click as fast as humanly possible.</span>
+            <span class="zh">等颜色变绿后迅速点击，看看你是不是电竞手速。</span>
+          </p>
+          <span class="card-tag">Touch / Click</span>
+        </div>
+      </a>
+      <a href="games/tictactoe/index.html" class="game-card">
+        <div class="card-icon c-tic">TIC-TAC</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Tic-Tac-Toe</span>
+            <span class="zh">井字棋</span>
+          </h3>
+          <p>
+            <span class="en">A simple 3-in-a-row game against a smart built-in AI opponent.</span>
+            <span class="zh">三点一线的简单博弈，和一个不太蠢的AI对战。</span>
+          </p>
+          <span class="card-tag">Touch / Click</span>
+        </div>
+      </a>
+      <a href="games/colorflood/index.html" class="game-card">
+        <div class="card-icon c-flood">FLOOD</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Color Flood</span>
+            <span class="zh">颜色洪水</span>
+          </h3>
+          <p>
+            <span class="en">Select colors to flood the board from the top-left within the move limit.</span>
+            <span class="zh">从左上角开始蔓延周边颜色，看准步数限制再点。</span>
+          </p>
+          <span class="card-tag">Touch / Click</span>
+        </div>
+      </a>
+      <a href="games/pong/index.html" class="game-card">
+        <div class="card-icon c-pong">PONG</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Pong Arcade</span>
+            <span class="zh">极简乒乓</span>
+          </h3>
+          <p>
+            <span class="en">The grandparent of video games. Defend your edge and score on the right.</span>
+            <span class="zh">游戏界活化石，体验最纯粹的反弹拉扯与博弈。</span>
+          </p>
+          <span class="card-tag">Keyboard (W/S)</span>
+        </div>
+      </a>
+      <a href="games/jumper/index.html" class="game-card">
+        <div class="card-icon c-jumper">JUMP</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Jumper Cube</span>
+            <span class="zh">跳跃方块</span>
+          </h3>
+          <p>
+            <span class="en">Tap to jump repeatedly and navigate through the incoming pipe gaps.</span>
+            <span class="zh">致敬某著名小鸟，点击控制跳跃穿过不断袭来的墙壁缝隙。</span>
+          </p>
+          <span class="card-tag">Touch / Space</span>
+        </div>
+      </a>
+      <a href="games/simon/index.html" class="game-card">
+        <div class="card-icon c-simon">SIMON</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Simon Says</span>
+            <span class="zh">指令记忆</span>
+          </h3>
+          <p>
+            <span class="en">Watch the sequence of glowing buttons carefully and repeat it flawlessly.</span>
+            <span class="zh">仔细看按钮亮起的顺序，然后凭记忆准确跟着点击。</span>
+          </p>
+          <span class="card-tag">Touch / Click</span>
+        </div>
+      </a>
+      <a href="games/whack/index.html" class="game-card">
+        <div class="card-icon c-whack">WHACK</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Whack-a-Block</span>
+            <span class="zh">打方块</span>
+          </h3>
+          <p>
+            <span class="en">A brutal speed test. Tap the highlighted blocks before they disappear.</span>
+            <span class="zh">打地鼠的狂野黑客版本，方块变深色的一刹那立刻按下。</span>
+          </p>
+          <span class="card-tag">Touch / Click</span>
+        </div>
+      </a>
+      <a href="games/connect4/index.html" class="game-card">
+        <div class="card-icon c-connect4">CONN4</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Connect 4</span>
+            <span class="zh">四子连线</span>
+          </h3>
+          <p>
+            <span class="en">Drop colored chips into the grid to match four in a row vertically or diagonally.</span>
+            <span class="zh">一人一步，横竖斜皆可，谁先连成四个就算赢，需要好友在身边。</span>
+          </p>
+          <span class="card-tag">Touch / Click</span>
+        </div>
+      </a>
+      <a href="games/typing/index.html" class="game-card">
+        <div class="card-icon c-typing">TYPE</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Typing Defense</span>
+            <span class="zh">打字防线</span>
+          </h3>
+          <p>
+            <span class="en">Defend your base! Type the falling code words to destroy them mid-air.</span>
+            <span class="zh">防线告急！快速敲击键盘输出天上掉下的字母词汇来击毁它们。</span>
+          </p>
+          <span class="card-tag">Keyboard</span>
+        </div>
+      </a>
+      <a href="games/shooter/index.html" class="game-card">
+        <div class="card-icon c-shooter">SPACE</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Pixel Shooter</span>
+            <span class="zh">像素空战</span>
+          </h3>
+          <p>
+            <span class="en">Space Invaders style. Fire upwards at the descending swarm of blocks.</span>
+            <span class="zh">经典小蜜蜂机制重现，躲避并突突掉上方的像素方阵。</span>
+          </p>
+          <span class="card-tag">Keyboard / D-Pad</span>
+        </div>
+      </a>
+      <a href="games/hangman/index.html" class="game-card">
+        <div class="card-icon c-hangman">HANG</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Code Hangman</span>
+            <span class="zh">猜词客</span>
+          </h3>
+          <p>
+            <span class="en">Guess the secret programming term letter by letter. 6 strikes and you're out.</span>
+            <span class="zh">盲猜英文单词字母，选错6次这个小黑人就会被挂起来。</span>
+          </p>
+          <span class="card-tag">Keyboard</span>
+        </div>
+      </a>
+      <a href="games/crosser/index.html" class="game-card">
+        <div class="card-icon c-crosser">CROSS</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Road Crosser</span>
+            <span class="zh">步步惊心</span>
+          </h3>
+          <p>
+            <span class="en">Navigate your black block up through a deadly highway of moving traffic.</span>
+            <span class="zh">操控主方块一步步穿过危机四伏的马路，绝对不要碰到车。</span>
+          </p>
+          <span class="card-tag">Keyboard / D-Pad</span>
+        </div>
+      </a>
+      <a href="games/aim/index.html" class="game-card">
+        <div class="card-icon c-aim">AIM</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Aim Trainer</span>
+            <span class="zh">鼠标瞄准</span>
+          </h3>
+          <p>
+            <span class="en">Click the expanding targets as quickly as possible. Good warmup for your mouse hand.</span>
+            <span class="zh">在靶心消失前精准命中，FPS射击玩家赛前极佳的活动热身项目。</span>
+          </p>
+          <span class="card-tag">Mouse / Touch</span>
+        </div>
+      </a>
+      <a href="games/balloon/index.html" class="game-card">
+        <div class="card-icon c-balloon">BALLOON</div>
+        <div class="card-body">
+          <h3>
+            <span class="en">Balloon Pop</span>
+            <span class="zh">气球大作战</span>
+          </h3>
+          <p>
+            <span class="en">Pop the colorful rising balloons. Awesome hand-eye coordination for kids!</span>
+            <span class="zh">点击戳破屏幕下方飘上来的彩色大气球，难度会越来越高。</span>
+          </p>
+          <span class="card-tag">Touch / Mouse</span>
+        </div>
+      </a>
+    </div>
   </main>
 
   <footer class="site-footer">
-    <p>Coded by hand. Vanilla HTML / CSS / JS.</p>
+    <p>
+      <span class="en">© PIXNORA. Coded by hand. Vanilla HTML / CSS / JS.</span>
+      <span class="zh">© PIXNORA. 独立手敲代码。原生 HTML / CSS / JS。</span>
+    </p>
   </footer>
 
+  <script>
+    function setLang(lang) {
+      document.body.className = 'lang-' + lang;
+      document.documentElement.lang = lang;
+      localStorage.setItem('pixnora_lang', lang);
+      document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn';
+      document.getElementById('btn-zh').className = lang === 'zh' ? 'lang-btn active' : 'lang-btn';
+      document.title = lang === 'en' ? 'PIXNORA | Indie Mini-Games' : 'PIXNORA | 独立小游戏站';
+    }
+    
+    let savedLang = localStorage.getItem('pixnora_lang') || 'en';
+    setLang(savedLang);
+  </script>
 </body>
 </html>
