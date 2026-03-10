@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>猜词客 | X-ARCADE</title>
   <link rel="stylesheet" href="../../css/style.css">
-  <style>canvas { background: #fff;} .h-area { display:flex; gap:20px; align-items:center; } .word-box { font-size: 2rem; letter-spacing:8px; font-weight:bold;} .keys { margin-top:20px; word-break:break-all;} .key{ display:inline-block; width:30px;height:30px;text-align:center;line-height:30px;border:2px solid; margin:4px; font-weight:bold; cursor:pointer;} .key.used{ color:#ccc; border-color:#ccc; cursor:default;pointer-events:none;}</style>
+  <style>canvas { background: #fff;} .h-area { display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:center; } .word-box { font-size: 2rem; letter-spacing:8px; font-weight:bold;} .keys { margin-top:20px; word-break:break-all; max-width:400px;} .key{ display:inline-block; width:36px;height:36px;text-align:center;line-height:36px;border:2px solid; margin:3px; font-weight:bold; cursor:pointer; font-size:0.9rem;} .key.used{ color:#ccc; border-color:#ccc; cursor:default;pointer-events:none;} @media(max-width:480px){ .word-box{font-size:1.4rem; letter-spacing:5px;} .key{width:28px;height:28px;line-height:28px;font-size:0.75rem;margin:2px;} }</style>
 </head>
 <body class="game-page">
 

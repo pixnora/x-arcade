@@ -245,7 +245,7 @@
     // 鼠标控制
     canvas.addEventListener('mousemove', e => {
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
       paddleX = Math.max(0, Math.min(canvas.width - paddleW, x - paddleW/2));
     });
 
@@ -253,9 +253,15 @@
     canvas.addEventListener('touchmove', e => {
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
-      const x = e.touches[0].clientX - rect.left;
+      const x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
       paddleX = Math.max(0, Math.min(canvas.width - paddleW, x - paddleW/2));
     });
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+      paddleX = Math.max(0, Math.min(canvas.width - paddleW, x - paddleW/2));
+    }, {passive: false});
 
     startBtn.addEventListener('click', init);
 

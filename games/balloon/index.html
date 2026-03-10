@@ -206,12 +206,15 @@
         particles.push(new Particle(x, y, color));
       }
       
-      // 飘字动画 (脱离canvas使用DOM实现，更容易带阴影和动画)
+      // 飘字动画 — 转换 canvas 坐标到 DOM 坐标
+      const rect = canvas.getBoundingClientRect();
+      const domX = x * (rect.width / canvas.width);
+      const domY = y * (rect.height / canvas.height);
       const popup = document.createElement('div');
       popup.className = 'score-popup';
       popup.innerText = '+' + points;
-      popup.style.left = (x - 10) + 'px';
-      popup.style.top = (y - 20) + 'px';
+      popup.style.left = (domX - 10) + 'px';
+      popup.style.top = (domY - 20) + 'px';
       // 根据分数决定颜色
       if(points > 3) popup.style.color = '#FFED66';
       else if(points > 1) popup.style.color = '#74B9FF';
@@ -342,6 +345,7 @@
     function handleTap(e) {
       if (!isRunning) return;
       e.preventDefault();
+      e.stopImmediatePropagation(); // 防止 mobile.js 二次触发
 
       let x, y;
       const rect = canvas.getBoundingClientRect();
@@ -351,7 +355,7 @@
       // 支持鼠标或触摸
       if (e.type === 'touchstart') {
         x = (e.touches[0].clientX - rect.left) * scaleX;
-        y = (e.touches[0].clientY - rect.left) * scaleY;
+        y = (e.touches[0].clientY - rect.top) * scaleY;
       } else {
         x = (e.offsetX !== undefined) ? e.offsetX : (e.clientX - rect.left) * scaleX;
         y = (e.offsetY !== undefined) ? e.offsetY : (e.clientY - rect.top) * scaleY;

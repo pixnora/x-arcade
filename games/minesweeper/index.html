@@ -85,6 +85,31 @@
       margin-bottom: 10px;
       cursor: pointer;
     }
+    .flag-toggle {
+      display: none;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: 900;
+      border: 3px solid #111;
+      background: #fff;
+      box-shadow: 3px 3px 0 #111;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .flag-toggle.active {
+      background: #ffed66;
+      box-shadow: 0 0 0 #111;
+      transform: translate(3px, 3px);
+    }
+    @media (max-width: 480px) {
+      .mine-cell { width: 22px; height: 22px; font-size: 0.6rem; }
+      .flag-toggle { display: block; }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+      .mine-cell { width: 28px; height: 28px; font-size: 0.75rem; }
+      .flag-toggle { display: block; }
+    }
   </style>
 </head>
 <body class="game-page">
@@ -108,8 +133,10 @@
 
   <div class="mine-board" id="board"></div>
 
+  <button class="flag-toggle" id="flagToggle">🚩 插旗模式：关</button>
+
   <p style="color: var(--text-muted); margin-top: 16px; font-size: 0.9rem; text-align: center;">
-    左键揭开格子 · 右键/长按标记旗帜 · 点击重新开始
+    左键揭开格子 · 右键/长按标记旗帜 · 手机点击下方切换插旗模式
   </p>
 
   <script>
@@ -122,6 +149,18 @@
     const minesLeftEl = document.getElementById('minesLeft');
     const timerEl = document.getElementById('timer');
     const statusEmoji = document.getElementById('statusEmoji');
+    const flagToggle = document.getElementById('flagToggle');
+    let flagMode = false;
+
+    flagToggle.addEventListener('click', () => {
+      flagMode = !flagMode;
+      flagToggle.textContent = flagMode ? '🚩 插旗模式：开' : '🚩 插旗模式：关';
+      flagToggle.className = flagMode ? 'flag-toggle active' : 'flag-toggle';
+    });
+
+    function getCellSize() {
+      return window.innerWidth <= 480 ? 22 : (window.innerWidth <= 768 ? 28 : 36);
+    }
 
     function init(rows = 9, cols = 9, mines = 10) {
       ROWS = rows; COLS = cols; MINES = mines;
@@ -138,17 +177,23 @@
       minesLeftEl.textContent = MINES;
       statusEmoji.textContent = '';
 
-      boardEl.style.gridTemplateColumns = `repeat(${COLS}, 36px)`;
+      const cellSize = getCellSize();
+      boardEl.style.gridTemplateColumns = `repeat(${COLS}, ${cellSize}px)`;
       boardEl.innerHTML = '';
 
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const cell = document.createElement('div');
           cell.className = 'mine-cell';
+          cell.style.width = cellSize + 'px';
+          cell.style.height = cellSize + 'px';
           cell.dataset.r = r;
           cell.dataset.c = c;
 
-          cell.addEventListener('click', () => handleClick(r, c));
+          cell.addEventListener('click', () => {
+            if (flagMode) { handleFlag(r, c); }
+            else { handleClick(r, c); }
+          });
           cell.addEventListener('contextmenu', e => { e.preventDefault(); handleFlag(r, c); });
 
           // 长按标旗（移动端）

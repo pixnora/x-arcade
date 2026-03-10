@@ -9,8 +9,8 @@
 <body class="lang-en">
 
   <div class="lang-switch">
-    <button onclick="setLang('en')" class="lang-btn active" id="btn-en">EN</button>
-    <button onclick="setLang('zh')" class="lang-btn" id="btn-zh">中文</button>
+    <button class="lang-btn active" id="btn-en">EN</button>
+    <button class="lang-btn" id="btn-zh">中文</button>
   </div>
 
   <header class="site-header">
@@ -309,7 +309,10 @@
       document.title = lang === 'en' ? 'PIXNORA | Indie Mini-Games' : 'PIXNORA | 独立小游戏站';
     }
     
-    let savedLang = localStorage.getItem('pixnora_lang') || 'en';
+    document.getElementById('btn-en').addEventListener('click', function() { setLang('en'); });
+    document.getElementById('btn-zh').addEventListener('click', function() { setLang('zh'); });
+    
+    var savedLang = localStorage.getItem('pixnora_lang') || 'en';
     setLang(savedLang);
   </script>
 </body>

@@ -71,9 +71,9 @@
       color: #fff;
     }
     @media (max-width: 480px) {
-      .memory-board { grid-template-columns: repeat(4, 70px); gap: 8px; }
-      .memory-card { width: 70px; height: 70px; }
-      .memory-card .card-back { font-size: 1.8rem; }
+      .memory-board { grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 100%; }
+      .memory-card { width: 100%; aspect-ratio: 1; height: auto; }
+      .memory-card .card-back { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -164,7 +164,7 @@
 
       boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 90px)`;
       if (window.innerWidth <= 480) {
-        boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 70px)`;
+        boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
       }
 
       boardEl.innerHTML = '';
