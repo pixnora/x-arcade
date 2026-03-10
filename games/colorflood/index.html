@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>颜色洪水 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .flood-board {
+      display: inline-grid;
+      gap: 1px;
+      background: #1a1a2e;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: var(--shadow);
+    }
+    .flood-cell {
+      width: 28px;
+      height: 28px;
+      border-radius: 3px;
+      transition: background 0.15s;
+    }
+    .color-palette {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .color-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .color-btn:hover {
+      transform: scale(1.15);
+    }
+    .color-btn.active {
+      border-color: #fff;
+      box-shadow: 0 0 16px rgba(255,255,255,0.3);
+    }
+    .progress-bar {
+      width: 100%;
+      max-width: 400px;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .progress-bar .fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .diff-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .diff-buttons .btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    @media (max-width: 480px) {
+      .flood-cell { width: 22px; height: 22px; }
+      .color-btn { width: 40px; height: 40px; }
+    }
+  </style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>颜色洪水</h1>
+  </div>
+
+  <div class="diff-buttons">
+    <button class="btn active" data-size="10" data-max="20">10×10 简单</button>
+    <button class="btn" data-size="14" data-max="25">14×14 中等</button>
+  </div>
+
+  <div class="game-info">
+    <span><span class="label">步数:</span><strong id="moves">0</strong>/<strong id="maxMoves">20</strong></span>
+    <span><span class="label">填充:</span><strong id="percent">0</strong>%</span>
+  </div>
+
+  <div class="flood-board" id="board"></div>
+
+  <div class="progress-bar">
+    <div class="fill" id="progressFill" style="width: 0%"></div>
+  </div>
+
+  <div class="color-palette" id="palette"></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="newGameBtn">新游戏</button>
+  </div>
+
+  <p style="color: var(--text-muted); margin-top: 12px; font-size: 0.9rem; text-align: center;">
+    从左上角开始，选择颜色填充相邻同色区域，用最少步数填满整个棋盘
+  </p>
+
+  <script>
+    const COLORS = ['#e17055', '#00cec9', '#6c5ce7', '#fdcb6e', '#55efc4', '#fd79a8'];
+
+    let SIZE = 10;
+    let MAX_MOVES = 20;
+    let grid = [];
+    let moves = 0;
+    let gameOver = false;
+
+    const boardEl = document.getElementById('board');
+    const paletteEl = document.getElementById('palette');
+    const movesEl = document.getElementById('moves');
+    const maxMovesEl = document.getElementById('maxMoves');
+    const percentEl = document.getElementById('percent');
+    const progressFill = document.getElementById('progressFill');
+
+    function init() {
+      moves = 0;
+      gameOver = false;
+      movesEl.textContent = '0';
+      maxMovesEl.textContent = MAX_MOVES;
+
+      // 生成随机网格
+      grid = Array.from({length: SIZE}, () =>
+        Array.from({length: SIZE}, () => Math.floor(Math.random() * COLORS.length))
+      );
+
+      renderBoard();
+      renderPalette();
+      updateProgress();
+    }
+
+    function renderBoard() {
+      boardEl.style.gridTemplateColumns = `repeat(${SIZE}, ${window.innerWidth <= 480 ? 22 : 28}px)`;
+      boardEl.innerHTML = '';
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'flood-cell';
+          cell.style.background = COLORS[grid[r][c]];
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    function renderPalette() {
+      paletteEl.innerHTML = '';
+      COLORS.forEach((color, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'color-btn';
+        if (i === grid[0][0]) btn.classList.add('active');
+        btn.style.background = color;
+        btn.addEventListener('click', () => flood(i));
+        paletteEl.appendChild(btn);
+      });
+    }
+
+    function flood(colorIndex) {
+      if (gameOver) return;
+      const currentColor = grid[0][0];
+      if (colorIndex === currentColor) return;
+
+      moves++;
+      movesEl.textContent = moves;
+
+      // BFS flood fill from top-left
+      const visited = Array.from({length: SIZE}, () => Array(SIZE).fill(false));
+      const queue = [[0, 0]];
+      visited[0][0] = true;
+
+      while (queue.length) {
+        const [r, c] = queue.shift();
+        grid[r][c] = colorIndex;
+
+        const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+        for (const [dr, dc] of dirs) {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE &&
+              !visited[nr][nc] && grid[nr][nc] === currentColor) {
+            visited[nr][nc] = true;
+            queue.push([nr, nc]);
+          }
+        }
+      }
+
+      renderBoard();
+      updatePaletteActive(colorIndex);
+      updateProgress();
+
+      // 检测胜利
+      const allSame = grid.every(row => row.every(c => c === colorIndex));
+      if (allSame) {
+        gameOver = true;
+        setTimeout(() => alert(`GG, 你赢了！\n用了 ${moves} 步完成`), 200);
+      } else if (moves >= MAX_MOVES) {
+        gameOver = true;
+        setTimeout(() => alert(`步数用完了！\n试试用更少的步数`), 200);
+      }
+    }
+
+    function updatePaletteActive(colorIndex) {
+      paletteEl.querySelectorAll('.color-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === colorIndex);
+      });
+    }
+
+    function updateProgress() {
+      // 计算连通区域大小
+      const visited = Array.from({length: SIZE}, () => Array(SIZE).fill(false));
+      const queue = [[0, 0]];
+      const targetColor = grid[0][0];
+      visited[0][0] = true;
+      let count = 0;
+
+      while (queue.length) {
+        const [r, c] = queue.shift();
+        count++;
+        const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+        for (const [dr, dc] of dirs) {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE &&
+              !visited[nr][nc] && grid[nr][nc] === targetColor) {
+            visited[nr][nc] = true;
+            queue.push([nr, nc]);
+          }
+        }
+      }
+
+      const pct = Math.round(count / (SIZE * SIZE) * 100);
+      percentEl.textContent = pct;
+      progressFill.style.width = pct + '%';
+    }
+
+    // 难度切换
+    document.querySelectorAll('.diff-buttons .btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.diff-buttons .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        SIZE = +btn.dataset.size;
+        MAX_MOVES = +btn.dataset.max;
+        init();
+      });
+    });
+
+    document.getElementById('newGameBtn').addEventListener('click', init);
+
+    init();
+  </script>
+
+</body>
+</html>

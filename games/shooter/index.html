@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素空战 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>canvas { background: #fff; }</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>像素空战</h1>
+  </div>
+
+  <div class="game-info">
+    <span>击杀: <strong id='sc'>0</strong></span>
+  </div>
+
+  <div class='game-canvas-wrapper'><canvas id='c' width='400' height='300'></canvas></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const c = document.getElementById('c'), ctx = c.getContext('2d'), scEl = document.getElementById('sc');
+            let px=190, bs=[], es=[], eDir=1, keys={}, sc=0, ft=0;
+            document.onkeydown = e => keys[e.code]=true; document.onkeyup = e => keys[e.code]=false;
+            function initE() { es=[]; for(let r=0;r<3;r++) for(let c=0;c<6;c++) es.push({x:30+c*40, y:20+r*30, alive:true}); }
+            function loop() {
+                if(!isRunning) return requestAnimationFrame(loop);
+                if(keys['ArrowLeft'] || keys['KeyA']) px = Math.max(0, px-4);
+                if(keys['ArrowRight'] || keys['KeyD']) px = Math.min(380, px+4);
+                if(keys['Space'] && ft<=0) { bs.push({x:px+8, y:270}); ft=15; }
+                ft--; ctx.clearRect(0,0,400,300);
+                ctx.fillStyle='#111'; ctx.fillRect(px, 280, 20, 15); // ship
+                
+                bs.forEach(b=>{ b.y-=5; ctx.fillRect(b.x, b.y, 4, 10); });
+                bs = bs.filter(b=>b.y>0);
+                
+                let moveY = false, minX=400, maxX=0;
+                es.forEach(e => { if(e.alive) { minX=Math.min(minX,e.x); maxX=Math.max(maxX,e.x); } });
+                if(maxX>370 && eDir>0) { eDir=-1; moveY=true; }
+                if(minX<10 && eDir<0) { eDir=1; moveY=true; }
+                
+                let allDead = true;
+                es.forEach(e=>{
+                    if(!e.alive) return;
+                    allDead = false;
+                    e.x += eDir * 0.8; if(moveY) e.y += 15;
+                    ctx.fillStyle='#54a0ff'; ctx.fillRect(e.x, e.y, 20, 15);
+                    bs.forEach(b=>{
+                        if(b.x>e.x&&b.x<e.x+20 && b.y>e.y&&b.y<e.y+15) { e.alive=false; b.y=-100; sc++; scEl.innerText=sc; }
+                    });
+                    if(e.y>270) { isRunning=false; alert('防线失守!'); }
+                });
+                if(allDead) initE();
+                requestAnimationFrame(loop);
+            }
+            startBtn.onclick = () => { isRunning=true; px=190; bs=[]; sc=0; scEl.innerText=0; initE(); };
+            loop();
+        
+  </script>
+</body>
+</html>

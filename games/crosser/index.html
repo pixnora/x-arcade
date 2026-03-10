@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>步步惊心 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>canvas { background: #fff; }</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>步步惊心</h1>
+  </div>
+
+  <div class="game-info">
+    <span>安全抵达: <strong id='sc'>0</strong> 次</span>
+  </div>
+
+  <div class='game-canvas-wrapper'><canvas id='c' width='400' height='300'></canvas></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const c = document.getElementById('c'), ctx = c.getContext('2d'), scEl = document.getElementById('sc');
+            let px=190, py=270, cars=[], sc=0;
+            document.onkeydown = e => {
+                if(!isRunning) return;
+                if((e.key==='ArrowUp'||e.key==='w') && py>0) py-=30;
+                if((e.key==='ArrowDown'||e.key==='s') && py<270) py+=30;
+                if(e.key==='ArrowLeft'||e.key==='a') px=Math.max(0,px-30);
+                if(e.key==='ArrowRight'||e.key==='d') px=Math.min(380,px+30);
+                if(py<=0) { sc++; scEl.innerText=sc; py=270; px=190; initC(); }
+            };
+            function initC(){ cars=[]; let dirs=[1,-1,1.5,-1.5,-2,2]; for(let i=0;i<8;i++){ cars.push({y: 30+i*30, x:Math.random()*400, s:dirs[i%6]*(Math.random()+0.5), w: Math.random()*30+20}); } }
+            function loop(){
+                if(!isRunning) return requestAnimationFrame(loop);
+                ctx.clearRect(0,0,400,300);
+                cars.forEach(cr => {
+                    cr.x += cr.s; if(cr.x>400) cr.x=-cr.w; if(cr.x<-cr.w) cr.x=400;
+                    ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.strokeRect(cr.x, cr.y, cr.w, 20);
+                    if(px<cr.x+cr.w && px+20>cr.x && py<cr.y+20 && py+20>cr.y) { isRunning=false; alert('被碾过了'); }
+                });
+                ctx.fillStyle='#ff9f43'; ctx.fillRect(px,py,20,20);
+                ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.strokeRect(px,py,20,20);
+                requestAnimationFrame(loop);
+            }
+            startBtn.onclick = () => { isRunning=true; sc=0; scEl.innerText=0; px=190; py=270; initC(); };
+            loop();
+        
+  </script>
+</body>
+</html>

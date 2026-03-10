@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>跳跃方块 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>canvas { background: #fff; cursor: pointer; }</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>跳跃方块</h1>
+  </div>
+
+  <div class="game-info">
+    <span>得分: <strong id='s'>0</strong></span>
+  </div>
+
+  <div class='game-canvas-wrapper'><canvas id='c' width='400' height='300'></canvas></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const c = document.getElementById('c'), ctx = c.getContext('2d'), sEl = document.getElementById('s');
+            let y, v, pipes, frame, score;
+            function reset() { y=150; v=0; pipes=[]; frame=0; score=0; isRunning=true; sEl.innerText=0; }
+            function jump() { if(isRunning) v = -7; }
+            document.onkeydown = e => { if(e.code === 'Space') jump(); };
+            c.onmousedown = jump;
+            function loop() {
+                if(!isRunning) return requestAnimationFrame(loop);
+                v += 0.4; y += v; frame++;
+                if(frame % 70 === 0) {
+                    let h = Math.random() * 150 + 20;
+                    pipes.push({x: 400, y: 0, w: 40, h: h});
+                    pipes.push({x: 400, y: h+90, w: 40, h: 300-h-90});
+                }
+                ctx.clearRect(0,0,400,300);
+                ctx.fillStyle='#111'; ctx.fillRect(50, y, 20, 20); // player
+                for(let i=0; i<pipes.length; i++) {
+                    let p = pipes[i]; p.x -= 3; ctx.fillRect(p.x, p.y, p.w, p.h);
+                    if(50<p.x+p.w && 70>p.x && y<p.y+p.h && y+20>p.y) isRunning = false;
+                    if(p.x === 50 && p.y===0) { score++; sEl.innerText=score; }
+                }
+                if(y>300 || y<0) isRunning = false;
+                if(!isRunning) { ctx.font='20px monospace'; ctx.fillText('GAME OVER', 150, 150); }
+                requestAnimationFrame(loop);
+            }
+            startBtn.onclick = reset; loop();
+        
+  </script>
+</body>
+</html>

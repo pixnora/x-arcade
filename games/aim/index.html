@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鼠标瞄准 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>canvas { background: #fff; cursor:crosshair; }</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>鼠标瞄准</h1>
+  </div>
+
+  <div class="game-info">
+    <span>命中: <strong id='sc'>0</strong></span> <span>漏掉: <strong id='ms'>0</strong></span>
+  </div>
+
+  <div class='game-canvas-wrapper'><canvas id='c' width='400' height='300'></canvas></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const c = document.getElementById('c'), ctx = c.getContext('2d');
+            const scEl = document.getElementById('sc'), msEl = document.getElementById('ms');
+            let sc=0, ms=0, targets=[];
+            c.onmousedown = e => {
+                if(!isRunning) return;
+                let rect = c.getBoundingClientRect(), mx=e.clientX-rect.left, my=e.clientY-rect.top;
+                for(let i=targets.length-1; i>=0; i--) {
+                    let t=targets[i], dx=mx-t.x, dy=my-t.y;
+                    if(dx*dx+dy*dy <= t.r*t.r) { targets.splice(i,1); sc++; scEl.innerText=sc; return; }
+                }
+            };
+            function loop(){
+                if(!isRunning) return requestAnimationFrame(loop);
+                ctx.clearRect(0,0,400,300);
+                if(Math.random()<0.03) targets.push({x:30+Math.random()*340, y:30+Math.random()*240, r:40});
+                for(let i=targets.length-1; i>=0; i--){
+                    let t = targets[i]; t.r -= 0.3;
+                    if(t.r<=0) { targets.splice(i,1); ms++; msEl.innerText=ms; }
+                    else {
+                        ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI*2);
+                        ctx.fillStyle='#c8d6e5'; ctx.fill();
+                        ctx.strokeStyle='#111'; ctx.lineWidth=3; ctx.stroke();
+                        ctx.beginPath(); ctx.arc(t.x, t.y, t.r/3, 0, Math.PI*2); ctx.fillStyle='#111'; ctx.fill();
+                    }
+                }
+                if(ms>=5) { isRunning=false; alert('漏了5个，瞄准测试结束。得分: ' + sc); }
+                requestAnimationFrame(loop);
+            }
+            startBtn.onclick=()=>{ isRunning=true; sc=0; ms=0; scEl.innerText=0; msEl.innerText=0; targets=[]; };
+            loop();
+        
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打字防线 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>.t-area { position:relative; width:400px; height:300px; overflow:hidden;} .word { position:absolute; font-weight:bold; font-size:1.2rem;} .inp-box {margin-top:10px} input { border:3px solid #111; padding:8px; font-weight:bold; width:100%; font-family:inherit; font-size:1rem; outline:none; }</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>打字防线</h1>
+  </div>
+
+  <div class="game-info">
+    <span>坚持: <strong id='sc'>0</strong> 词</span>
+  </div>
+
+  <div class='game-canvas-wrapper t-area' id='ta'></div><div class='inp-box'><input type='text' id='inp' placeholder='在此输入拼写...' autocomplete='off' disabled></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const ta = document.getElementById('ta'), inp = document.getElementById('inp'), scEl = document.getElementById('sc');
+            const words_lib = ['HACK', 'BYTE', 'CODE', 'VOID', 'DEBUG', 'CACHE', 'PING', 'ROOT', 'NODE', 'LOOP'];
+            let words=[], sc=0, t=100;
+            function addWord() {
+                let txt = words_lib[Math.floor(Math.random()*words_lib.length)];
+                let el = document.createElement('div'); el.className='word'; el.innerText=txt;
+                el.style.left = Math.random()*300 + 'px';
+                el.style.top = '0px'; ta.appendChild(el);
+                words.push({t:txt, y:0, el:el, s:0.5 + Math.random()*1});
+            }
+            function loop() {
+                if(!isRunning) return requestAnimationFrame(loop);
+                t--; if(t<=0) { addWord(); t=150-Math.min(sc, 100); }
+                words.forEach(w => {
+                    w.y += w.s; w.el.style.top = w.y + 'px';
+                    if(w.y >= 280) { isRunning=false; alert('防线失守！坚持了 '+sc+' 个词。'); inp.disabled=true; }
+                });
+                requestAnimationFrame(loop);
+            }
+            inp.addEventListener('input', () => {
+                let v = inp.value.toUpperCase();
+                let idx = words.findIndex(w => w.t === v);
+                if(idx > -1) {
+                    ta.removeChild(words[idx].el);
+                    words.splice(idx, 1);
+                    inp.value = ''; sc++; scEl.innerText=sc;
+                }
+            });
+            startBtn.onclick = () => { isRunning=true; sc=0; scEl.innerText=0; ta.innerHTML=''; words=[]; t=50; inp.disabled=false; inp.focus(); };
+            loop();
+        
+  </script>
+</body>
+</html>

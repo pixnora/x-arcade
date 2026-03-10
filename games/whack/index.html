@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打方块 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>.w-grid { display:grid; grid-template-columns:repeat(3,90px); gap:6px; margin:auto;} .w-cell { width:90px; height:90px; border:3px solid #111; cursor:pointer; background:#fff;}</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>打方块</h1>
+  </div>
+
+  <div class="game-info">
+    <span>得分: <strong id='sc'>0</strong></span><span>时间: <strong id='tm'>30</strong></span>
+  </div>
+
+  <div class='game-canvas-wrapper w-grid' id='wg'></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const wg = document.getElementById('wg'), scEl = document.getElementById('sc'), tmEl = document.getElementById('tm');
+            let sc=0, tm=30, activeIdx=-1, timer, spawner;
+            for(let i=0;i<9;i++){
+                let c = document.createElement('div'); c.className='w-cell';
+                c.onmousedown = () => { if(isRunning && i===activeIdx) { sc++; scEl.innerText=sc; wg.children[i].style.background='#fff'; activeIdx=-1; } };
+                wg.appendChild(c);
+            }
+            function r() {
+                if(!isRunning) return;
+                if(activeIdx!==-1) wg.children[activeIdx].style.background='#fff';
+                activeIdx = Math.floor(Math.random()*9);
+                wg.children[activeIdx].style.background='#48dbfb';
+                spawner = setTimeout(r, Math.random()*500 + 400);
+            }
+            startBtn.onclick = () => {
+                isRunning=true; sc=0; tm=30; scEl.innerText=0; tmEl.innerText=30;
+                clearTimeout(spawner); clearInterval(timer);
+                if(activeIdx!==-1) wg.children[activeIdx].style.background='#fff';
+                timer = setInterval(()=>{
+                    tm--; tmEl.innerText=tm;
+                    if(tm<=0) { isRunning=false; clearInterval(timer); clearTimeout(spawner); alert('时间到! 得分: ' + sc); wg.children[activeIdx].style.background='#fff'; }
+                }, 1000);
+                r();
+            };
+        
+  </script>
+</body>
+</html>

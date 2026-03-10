@@ -1,0 +1,256 @@
+/* 粗野主义/像素风 (去AI审美) */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #FF5E5B;
+  --bg: #F4F4F0;
+  --bg-card: #FFFFFF;
+  --text: #111111;
+  --text-muted: #555555;
+  --border: #111111;
+  --shadow: 4px 4px 0px #111111;
+}
+
+body {
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Monaco, Consolas, 'Courier New', monospace; /* 程序员味 */
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* 头部 */
+.site-header {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 80px 20px 40px;
+  border-bottom: 3px solid var(--border);
+}
+
+.site-header h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+}
+
+.site-header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-top: 10px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* 游戏网格 */
+.games-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* 卡片 */
+.game-card {
+  background: var(--bg-card);
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0px var(--border);
+}
+
+.card-icon {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 900;
+  border-bottom: 3px solid var(--border);
+  letter-spacing: 2px;
+  color: #111;
+}
+
+/* 手工色板, 告别渐变色 */
+.c-snake { background: #48da88; }
+.c-memory { background: #ffed66; }
+.c-2048 { background: #ffb3ba; }
+.c-mine { background: #a29bfe; }
+.c-brick { background: #74b9ff; }
+.c-reaction { background: #ff7675; }
+.c-tic { background: #55efc4; }
+.c-flood { background: #ffeaa7; }
+
+.card-body {
+  padding: 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.card-body p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.card-tag {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 12px;
+  background: #f0f0f0;
+  border: 1px solid var(--border);
+  font-family: monospace;
+}
+
+/* 页脚 */
+.site-footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-top: 3px solid var(--border);
+}
+
+/* ===== 游戏子页面公共样式 ===== */
+.game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: var(--bg);
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 24px;
+  border-bottom: 3px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.back-btn {
+  display: inline-flex;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px var(--border);
+  color: #111;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-right: 20px;
+  transition: all 0.1s;
+}
+
+.back-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.game-header h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.game-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  flex-wrap: wrap;
+}
+
+.game-info span {
+  background: #fff;
+  padding: 6px 16px;
+  border: 2px solid var(--border);
+  box-shadow: 2px 2px 0px var(--border);
+}
+
+.game-info .label {
+  color: var(--text-muted);
+  margin-right: 8px;
+  font-weight: normal;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* 游戏画框加上粗线条 */
+.game-canvas-wrapper, .grid-container, .mine-board, .flood-board, .ttt-board, .reaction-box {
+  background: #fff !important;
+  border: 3px solid var(--border) !important;
+  box-shadow: 6px 6px 0px var(--border) !important;
+  border-radius: 0 !important;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: 3px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px var(--border);
+  transition: all 0.1s;
+  font-family: inherit;
+}
+
+.btn:hover { background: #f0f0f0; }
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.btn-primary, .btn.active { background: #ffed66; }
+.btn-primary:hover, .btn.active:hover { background: #e6d55c; }
+
+.game-controls {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .site-header h1 { font-size: 2.5rem; }
+  .games-grid { grid-template-columns: 1fr; }
+}
+
+/* 新增10个游戏的专属色板 */
+.c-pong { background: #ff9ff3; }
+.c-jumper { background: #feca57; }
+.c-simon { background: #ff6b6b; }
+.c-whack { background: #48dbfb; }
+.c-connect4 { background: #1dd1a1; }
+.c-typing { background: #00d2d3; }
+.c-shooter { background: #54a0ff; }
+.c-hangman { background: #5f27cd; }
+.c-crosser { background: #ff9f43; }
+.c-aim { background: #c8d6e5; }

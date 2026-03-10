@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>记忆翻牌 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .card-back svg { width: 40px; height: 40px; color: #111; }
+    .matched .card-back svg { color: var(--primary); }
+    .memory-board {
+      display: grid;
+      grid-template-columns: repeat(4, 90px);
+      gap: 12px;
+      margin: 20px auto;
+    }
+    .memory-card {
+      width: 90px;
+      height: 90px;
+      perspective: 600px;
+      cursor: pointer;
+    }
+    .memory-card .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s;
+      transform-style: preserve-3d;
+    }
+    .memory-card.flipped .card-inner,
+    .memory-card.matched .card-inner {
+      transform: rotateY(180deg);
+    }
+    .memory-card .card-front,
+    .memory-card .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 0; box-shadow: 2px 2px 0px var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      border: 3px solid var(--border);
+    }
+    .memory-card .card-front {
+      background: var(--text);
+      color: var(--primary-light);
+      font-size: 1.5rem;
+    }
+    .memory-card .card-back {
+      background: var(--bg-card);
+      transform: rotateY(180deg);
+    }
+    .memory-card.matched .card-back {
+      border-color: var(--accent);
+      background: rgba(0,206,201,0.1);
+    }
+    .memory-card:hover .card-front {
+      border-color: var(--primary);
+    }
+    .difficulty-select {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .difficulty-select .btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    @media (max-width: 480px) {
+      .memory-board { grid-template-columns: repeat(4, 70px); gap: 8px; }
+      .memory-card { width: 70px; height: 70px; }
+      .memory-card .card-back { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>记忆翻牌</h1>
+  </div>
+
+  <div class="difficulty-select">
+    <button class="btn active" data-size="4">4×4 简单</button>
+    <button class="btn" data-size="6">6×6 困难</button>
+  </div>
+
+  <div class="game-info">
+    <span><span class="label">步数:</span><strong id="moves">0</strong></span>
+    <span><span class="label">配对:</span><strong id="pairs">0</strong>/<strong id="totalPairs">8</strong></span>
+    <span><span class="label">时间:</span><strong id="timer">0</strong>s</span>
+  </div>
+
+  <div class="memory-board" id="board"></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="restartBtn">重新开始</button>
+  </div>
+
+  <script>
+    const ICONS = [
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 22 22 22"></polygon></svg>`, // Triangle
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>`, // Circle
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>`, // Square
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`, // Star
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`, // Heart
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>`, // Hexagon
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>`, // Cross
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`, // Moon
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`, // Sun
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`, // Drop
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`, // Zap
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`, // Monitor
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`, // Bell
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, // Message
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>`, // Lock
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`, // Eye
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, // Clock
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>` // File
+    ];
+
+    let boardSize = 4;
+    let cards = [];
+    let flippedCards = [];
+    let matchedCount = 0;
+    let moves = 0;
+    let totalPairs = 0;
+    let timerInterval = null;
+    let seconds = 0;
+    let locked = false;
+
+    const boardEl = document.getElementById('board');
+    const movesEl = document.getElementById('moves');
+    const pairsEl = document.getElementById('pairs');
+    const totalPairsEl = document.getElementById('totalPairs');
+    const timerEl = document.getElementById('timer');
+
+    function initGame() {
+      clearInterval(timerInterval);
+      seconds = 0;
+      moves = 0;
+      matchedCount = 0;
+      locked = false;
+      flippedCards = [];
+
+      timerEl.textContent = '0';
+      movesEl.textContent = '0';
+
+      totalPairs = (boardSize * boardSize) / 2;
+      totalPairsEl.textContent = totalPairs;
+      pairsEl.textContent = '0';
+
+      const emojis = ICONS.slice(0, totalPairs);
+      cards = [...emojis, ...emojis];
+      // Fisher-Yates shuffle
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+
+      boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 90px)`;
+      if (window.innerWidth <= 480) {
+        boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 70px)`;
+      }
+
+      boardEl.innerHTML = '';
+      cards.forEach((emoji, i) => {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div class="card-inner">
+            <div class="card-front">?</div>
+            <div class="card-back">${emoji}</div>
+          </div>
+        `;
+        card.addEventListener('click', () => flipCard(card, i));
+        boardEl.appendChild(card);
+      });
+
+      timerInterval = setInterval(() => {
+        seconds++;
+        timerEl.textContent = seconds;
+      }, 1000);
+    }
+
+    function flipCard(cardEl, index) {
+      if (locked) return;
+      if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+      if (flippedCards.length >= 2) return;
+
+      cardEl.classList.add('flipped');
+      flippedCards.push({ el: cardEl, index });
+
+      if (flippedCards.length === 2) {
+        moves++;
+        movesEl.textContent = moves;
+        locked = true;
+
+        const [a, b] = flippedCards;
+        if (cards[a.index] === cards[b.index]) {
+          a.el.classList.add('matched');
+          b.el.classList.add('matched');
+          matchedCount++;
+          pairsEl.textContent = matchedCount;
+          flippedCards = [];
+          locked = false;
+
+          if (matchedCount === totalPairs) {
+            clearInterval(timerInterval);
+            setTimeout(() => {
+              alert(`GG, 你赢了！\n耗时 ${seconds} 秒，共 ${moves} 步`);
+            }, 400);
+          }
+        } else {
+          setTimeout(() => {
+            a.el.classList.remove('flipped');
+            b.el.classList.remove('flipped');
+            flippedCards = [];
+            locked = false;
+          }, 800);
+        }
+      }
+    }
+
+    // 难度切换
+    document.querySelectorAll('.difficulty-select .btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.difficulty-select .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        boardSize = parseInt(btn.dataset.size);
+        initGame();
+      });
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', initGame);
+
+    initGame();
+  </script>
+
+</body>
+</html>

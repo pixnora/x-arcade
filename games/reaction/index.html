@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>反应速度测试 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    .reaction-box {
+      width: 100%;
+      max-width: 500px;
+      height: 350px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s;
+      user-select: none;
+      -webkit-user-select: none;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      text-align: center;
+    }
+    .reaction-box.waiting {
+      background: linear-gradient(135deg, #d63031, #e17055);
+    }
+    .reaction-box.ready {
+      background: linear-gradient(135deg, #00b894, #55efc4);
+    }
+    .reaction-box.result {
+      background: var(--bg-card);
+    }
+    .reaction-box.idle {
+      background: var(--bg-card);
+    }
+    .reaction-box.early {
+      background: linear-gradient(135deg, #e17055, #fdcb6e);
+    }
+    .reaction-box h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .reaction-box p {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.85);
+    }
+    .reaction-box.result h2 { color: var(--accent); }
+    .reaction-box.result p { color: var(--text-muted); }
+    .reaction-box.idle h2 { color: var(--text); }
+    .reaction-box.idle p { color: var(--text-muted); }
+    .results-list {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+    .results-list h3 {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    .result-item .time {
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .average-display {
+      text-align: center;
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+    }
+    .average-display .big-num {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-light);
+    }
+    .average-display .label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .rating { margin-top: 8px; font-size: 1.1rem; }
+  </style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>反应速度测试</h1>
+  </div>
+
+  <div class="reaction-box idle" id="box">
+    <h2>反应速度测试</h2>
+    <p>点击此区域开始测试<br>共5轮，取平均值</p>
+  </div>
+
+  <div class="average-display" id="avgDisplay" style="display: none;">
+    <div class="label">平均反应时间</div>
+    <div class="big-num" id="avgTime">--</div>
+    <div class="rating" id="rating"></div>
+  </div>
+
+  <div class="results-list" id="resultsList">
+    <h3>测试记录</h3>
+  </div>
+
+  <div class="game-controls">
+    <button class="btn" id="resetBtn" style="display: none;">重新测试</button>
+  </div>
+
+  <script>
+    const box = document.getElementById('box');
+    const resultsList = document.getElementById('resultsList');
+    const avgDisplay = document.getElementById('avgDisplay');
+    const avgTimeEl = document.getElementById('avgTime');
+    const ratingEl = document.getElementById('rating');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const ROUNDS = 5;
+    let state = 'idle'; // idle, waiting, ready, result, done
+    let round = 0;
+    let results = [];
+    let timeoutId = null;
+    let startTime = 0;
+
+    function startRound() {
+      state = 'waiting';
+      round++;
+      box.className = 'reaction-box waiting';
+      box.innerHTML = `<h2>第 ${round}/${ROUNDS} 轮</h2><p>等待变绿...</p><p style="font-size:0.9rem;margin-top:10px;"> 不要提前点击！</p>`;
+
+      const delay = 1500 + Math.random() * 3500;
+      timeoutId = setTimeout(() => {
+        state = 'ready';
+        startTime = performance.now();
+        box.className = 'reaction-box ready';
+        box.innerHTML = `<h2>点击！</h2><p>尽快点击！</p>`;
+      }, delay);
+    }
+
+    box.addEventListener('click', () => {
+      if (state === 'idle') {
+        results = [];
+        round = 0;
+        resultsList.innerHTML = '<h3>测试记录</h3>';
+        avgDisplay.style.display = 'none';
+        resetBtn.style.display = 'none';
+        startRound();
+        return;
+      }
+
+      if (state === 'waiting') {
+        clearTimeout(timeoutId);
+        state = 'early';
+        box.className = 'reaction-box early';
+        box.innerHTML = `<h2>太早了！</h2><p>还没变绿就点击了</p><p style="margin-top:10px;">点击继续</p>`;
+        round--;
+        return;
+      }
+
+      if (state === 'early') {
+        startRound();
+        return;
+      }
+
+      if (state === 'ready') {
+        const elapsed = Math.round(performance.now() - startTime);
+        results.push(elapsed);
+
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `<span>第 ${round} 轮</span><span class="time">${elapsed} ms</span>`;
+        resultsList.appendChild(item);
+
+        if (round >= ROUNDS) {
+          state = 'done';
+          const avg = Math.round(results.reduce((a,b) => a+b, 0) / results.length);
+          box.className = 'reaction-box result';
+          box.innerHTML = `<h2>测试完成！</h2><p>你的平均反应时间: ${avg} ms</p>`;
+
+          avgDisplay.style.display = '';
+          avgTimeEl.textContent = avg + ' ms';
+
+          let rating = '';
+          if (avg < 200) rating = '闪电般的速度！你是电竞选手吗？';
+          else if (avg < 250) rating = ' 非常快！反应敏捷';
+          else if (avg < 300) rating = ' 不错！高于平均水平';
+          else if (avg < 400) rating = ' 正常水平';
+          else rating = ' 需要多练练手速哦';
+          ratingEl.textContent = rating;
+
+          resetBtn.style.display = '';
+          return;
+        }
+
+        state = 'result';
+        box.className = 'reaction-box result';
+        box.innerHTML = `<h2>${elapsed} ms</h2><p>点击继续下一轮</p>`;
+        return;
+      }
+
+      if (state === 'result') {
+        startRound();
+        return;
+      }
+
+      if (state === 'done') {
+        // do nothing, use reset button
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      state = 'idle';
+      round = 0;
+      results = [];
+      resultsList.innerHTML = '<h3>测试记录</h3>';
+      avgDisplay.style.display = 'none';
+      resetBtn.style.display = 'none';
+      box.className = 'reaction-box idle';
+      box.innerHTML = `<h2>反应速度测试</h2><p>点击此区域开始测试<br>共5轮，取平均值</p>`;
+    });
+  </script>
+
+</body>
+</html>

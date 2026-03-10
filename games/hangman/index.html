@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猜词客 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>canvas { background: #fff;} .h-area { display:flex; gap:20px; align-items:center; } .word-box { font-size: 2rem; letter-spacing:8px; font-weight:bold;} .keys { margin-top:20px; word-break:break-all;} .key{ display:inline-block; width:30px;height:30px;text-align:center;line-height:30px;border:2px solid; margin:4px; font-weight:bold; cursor:pointer;} .key.used{ color:#ccc; border-color:#ccc; cursor:default;pointer-events:none;}</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>猜词客</h1>
+  </div>
+
+  <div class="game-info">
+    <span>命: <strong id='lives'>6</strong></span>
+  </div>
+
+  <div class='game-canvas-wrapper h-area'><canvas id='c' width='150' height='200'></canvas><div class='word-box' id='wb'>_ _ _</div></div> <div class='keys' id='kb'></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const words = ['REACT','LINUX','PYTHON','SERVER','GITHUB','ARRAY','SYSTEM'];
+            const c = document.getElementById('c'), ctx = c.getContext('2d');
+            const wb = document.getElementById('wb'), kb = document.getElementById('kb'), L = document.getElementById('lives');
+            let w='', g=new Set(), err=0;
+            const drawH = () => {
+                ctx.lineWidth=4; ctx.strokeStyle='#111'; ctx.beginPath();
+                if(err>0) { ctx.moveTo(20, 180); ctx.lineTo(130, 180); ctx.moveTo(75, 180); ctx.lineTo(75, 20); ctx.lineTo(100, 20); ctx.lineTo(100, 40); }
+                if(err>1) { ctx.arc(100, 55, 15, 0, Math.PI*2); }
+                if(err>2) { ctx.moveTo(100, 70); ctx.lineTo(100, 120); }
+                if(err>3) { ctx.moveTo(100, 80); ctx.lineTo(80, 110); ctx.moveTo(100, 80); ctx.lineTo(120, 110); }
+                if(err>4) { ctx.moveTo(100, 120); ctx.lineTo(80, 160); }
+                if(err>5) { ctx.moveTo(100, 120); ctx.lineTo(120, 160); }
+                ctx.stroke();
+            };
+            const init_hm = () => {
+                ctx.clearRect(0,0,150,200);
+                w = words[Math.floor(Math.random()*words.length)];
+                g.clear(); err=0; L.innerText = 6; kb.innerHTML='';
+                for(let i=65;i<=90;i++){
+                    let btn = document.createElement('div'); btn.innerText=String.fromCharCode(i); btn.className='key';
+                    btn.onclick = () => {
+                        if(!isRunning) return;
+                        btn.classList.add('used'); g.add(btn.innerText);
+                        if(!w.includes(btn.innerText)) err++;
+                        upd();
+                    };
+                    kb.appendChild(btn);
+                }
+                upd(); drawH();
+            };
+            const upd = () => {
+                L.innerText = 6 - err; drawH();
+                let txt = w.split('').map(c => g.has(c)?c:'_').join('');
+                wb.innerText = txt;
+                if(!txt.includes('_')) { isRunning=false; setTimeout(()=>alert('NB! 猜出来了'), 100); }
+                if(err>=6) { isRunning=false; wb.innerText=w; setTimeout(()=>alert('卒。'), 100); }
+            };
+            startBtn.onclick = () => { isRunning=true; init_hm(); };
+        
+  </script>
+</body>
+</html>

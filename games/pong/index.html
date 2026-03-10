@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极简乒乓 | X-ARCADE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>canvas { background: #fff; cursor: crosshair; }</style>
+</head>
+<body class="game-page">
+
+  <div class="game-header">
+    <a href="../../index.html" class="back-btn">← 返回</a>
+    <h1>极简乒乓</h1>
+  </div>
+
+  <div class="game-info">
+    <span>你: <strong id='pScore'>0</strong></span><span>AI: <strong id='eScore'>0</strong></span>
+  </div>
+
+  <div class='game-canvas-wrapper'><canvas id='c' width='500' height='300'></canvas></div>
+
+  <div class="game-controls">
+    <button class="btn btn-primary" id="startBtn">开始 / 重新开始</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    let isRunning = false;
+    
+            const c = document.getElementById('c'), ctx = c.getContext('2d');
+            const pScore = document.getElementById('pScore'), eScore = document.getElementById('eScore');
+            let p = 110, e = 110, bx = 250, by = 150, dx = 4, dy = 4, score = [0,0];
+            let keys = {}; document.onkeydown = e => keys[e.key] = true; document.onkeyup = e => keys[e.key] = false;
+            function loop() {
+                if(!isRunning) return requestAnimationFrame(loop);
+                if(keys['w']||keys['W']||keys['ArrowUp']) p = Math.max(0, p - 5);
+                if(keys['s']||keys['S']||keys['ArrowDown']) p = Math.min(220, p + 5);
+                e += (by - (e + 40)) * 0.08; // AI logic
+                e = Math.max(0, Math.min(220, e));
+                bx += dx; by += dy;
+                if(by<=0 || by>=290) dy = -dy;
+                let hitPad = (bx <= 30 && by+5 >= p && by <= p+80) || (bx >= 460 && by+5 >= e && by <= e+80);
+                if(hitPad) { dx = -dx * 1.1; dy += (Math.random()-0.5)*2; }
+                if(bx<0) { score[1]++; reset(); }
+                if(bx>500) { score[0]++; reset(); }
+                pScore.innerText = score[0]; eScore.innerText = score[1];
+                ctx.clearRect(0,0,500,300);
+                ctx.fillStyle='#111'; ctx.fillRect(10, p, 20, 80); ctx.fillRect(470, e, 20, 80);
+                ctx.fillRect(bx, by, 10, 10);
+                requestAnimationFrame(loop);
+            }
+            function reset(){ bx=250; by=150; dx=4*(Math.random()>0.5?1:-1); dy=4*(Math.random()>0.5?1:-1); }
+            startBtn.onclick = () => { isRunning = true; score=[0,0]; reset(); };
+            loop();
+        
+  </script>
+</body>
+</html>
