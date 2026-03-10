@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>猜词客 | X-ARCADE</title>
   <link rel="stylesheet" href="../../css/style.css">
   <style>canvas { background: #fff;} .h-area { display:flex; gap:20px; align-items:center; } .word-box { font-size: 2rem; letter-spacing:8px; font-weight:bold;} .keys { margin-top:20px; word-break:break-all;} .key{ display:inline-block; width:30px;height:30px;text-align:center;line-height:30px;border:2px solid; margin:4px; font-weight:bold; cursor:pointer;} .key.used{ color:#ccc; border-color:#ccc; cursor:default;pointer-events:none;}</style>
@@ -68,5 +68,6 @@
             startBtn.onclick = () => { isRunning=true; init_hm(); };
         
   </script>
+  <script src="../../js/mobile.js"></script>
 </body>
 </html>

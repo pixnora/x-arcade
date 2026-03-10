@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>四子连线 | X-ARCADE</title>
   <link rel="stylesheet" href="../../css/style.css">
   <style>.c4-grid { display:grid; grid-template-columns:repeat(7,50px); gap:4px; padding:10px; background:#111;} .c4-cell { width:50px; height:50px; border-radius:50%; background:#fff; cursor:pointer;} .c4-cell.p1 { background:#ff6b6b;} .c4-cell.p2 { background:#feca57;}</style>
@@ -62,5 +62,6 @@
             startBtn.onclick = () => { board = Array(6).fill().map(()=>Array(7).fill(0)); player=1; isRunning=true; render(); };
         
   </script>
+  <script src="../../js/mobile.js"></script>
 </body>
 </html>
