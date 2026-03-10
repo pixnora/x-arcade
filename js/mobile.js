@@ -119,10 +119,6 @@
   // Mark body
   document.body.classList.add('has-gamepad');
 
-  // ====== Read saved preference ======
-  let controlMode = localStorage.getItem('pixnora_ctrl') || 'dpad';
-  applyMode(controlMode);
-
   // ====== Control Selector ======
   const selector = document.createElement('div');
   selector.id = 'ctrl-selector';
@@ -137,7 +133,17 @@
       localStorage.setItem('pixnora_ctrl', controlMode);
       applyMode(controlMode);
     });
+    btn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      controlMode = btn.dataset.mode;
+      localStorage.setItem('pixnora_ctrl', controlMode);
+      applyMode(controlMode);
+    }, {passive: false});
   });
+
+  // ====== Read saved preference ======
+  let controlMode = localStorage.getItem('pixnora_ctrl') || 'dpad';
+  applyMode(controlMode);
 
   function applyMode(mode) {
     document.body.classList.remove('ctrl-dpad', 'ctrl-joystick', 'ctrl-none');

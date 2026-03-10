@@ -311,6 +311,8 @@
     
     document.getElementById('btn-en').addEventListener('click', function() { setLang('en'); });
     document.getElementById('btn-zh').addEventListener('click', function() { setLang('zh'); });
+    document.getElementById('btn-en').addEventListener('touchstart', function(e) { e.preventDefault(); setLang('en'); });
+    document.getElementById('btn-zh').addEventListener('touchstart', function(e) { e.preventDefault(); setLang('zh'); });
     
     var savedLang = localStorage.getItem('pixnora_lang') || 'en';
     setLang(savedLang);
